@@ -206,7 +206,6 @@ namespace SsmsRollbackMode
             }
             catch (Exception e)
             {
-
             }
         }
 
@@ -240,73 +239,59 @@ namespace SsmsRollbackMode
 
         internal static void UpdateTabColorDataInternal(Window docWindow, Color color, bool clear = false)
         {
-            var tabBorders = new List<Border>();
-            if (docWindow != null && docWindow.IsFloating)
-            {
-                DependencyObject parent = null;
-                foreach (var window in Application.Current.Windows)
-                {
-                    if (window.GetType().FullName?.Contains("Floating") != true) continue;
-                    try
-                    {
-                        var title = ReflectionHelper.GetPropertyValue(ReflectionHelper.GetPropertyValue(ReflectionHelper.GetPropertyValue(WpfHelper.FindVisualChildren<ContentPresenter>(WpfHelper.FindChild<Border>(window as DependencyObject, "ContentBorder")).Skip(1).FirstOrDefault()?.Content, "DataContext"), "Title"), "Title");
-                        if (title == null) continue;
-                        if (!title.ToString().Contains(docWindow.Caption)) continue;
-                        parent = window as DependencyObject;
-                        break;
-                    }
-                    catch (Exception ex)
-                    {
-                    }
-                }
-                if (parent != null)
-                {
-                    var child = WpfHelper.FindChild<Border>(parent, "Bd");
-                    tabBorders.Add(child);
-                }
-            }
+            var tabBorders = GetFloatingWindowTabBorders(docWindow);
+            tabBorders = tabBorders.Concat(GetWindowTabBorders(docWindow));
+            SetColor(color, clear, tabBorders.ToArray());
+        }
+
+        private static IEnumerable<Border> GetWindowTabBorders(Window docWindow)
+        {
             foreach (var window in Application.Current.Windows)
             {
-                var documentGroupControls =  WpfHelper.GetObjectsByTypeName(window as DependencyObject, "Microsoft.VisualStudio.PlatformUI.Shell.Controls.DocumentGroupControl");
+                var documentGroupControls = WpfHelper.GetObjectsByTypeName(window as DependencyObject,
+                    "Microsoft.VisualStudio.PlatformUI.Shell.Controls.DocumentGroupControl");
+
                 foreach (var documentGroupControl in documentGroupControls)
                 {
                     if (documentGroupControl == null) continue;
-                    
+
                     const string name = "Microsoft.VisualStudio.PlatformUI.Shell.Controls.DocumentTabItem";
                     var documentTabItems = WpfHelper.GetObjectsByTypeName(documentGroupControl, name);
+
                     foreach (var documentTabItem in documentTabItems)
                     {
-                        if (documentTabItem is HeaderedContentControl headeredContentControl)
-                        {
-                            var header = headeredContentControl.Header;
+                        if (!(documentTabItem is HeaderedContentControl headeredContentControl)) continue;
 
-                            if (header != null)
-                            {
-                                var headerTitle = header.GetType().GetProperty("Title");
+                        var header = headeredContentControl.Header;
 
-                                if (headerTitle != null)
-                                {
-                                    var headerTitleValue = headerTitle.GetValue(header, null);
-                                    var headerTitleString = headerTitleValue.GetType().GetProperty("Title");
-                                    if (headerTitleString != null && string.Compare(headerTitleString.GetValue(headerTitleValue, null).ToString().Trim(), docWindow?.Caption.Trim(), StringComparison.Ordinal) == 0)
-                                    {
-                                        var borders = WpfHelper.GetObjectsByTypeName(documentTabItem, "System.Windows.Controls.Border").ToArray();
-                                        if (borders.Length > 4)
-                                        {
-                                            tabBorders.Add(borders[2] as Border);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        if (tabBorders.Count > 0)
-                            break;
+                        if (header == null) continue;
+
+                        var headerTitle = header.GetType().GetProperty("Title");
+
+                        if (headerTitle == null) continue;
+
+                        var headerTitleValue = headerTitle.GetValue(header, null);
+                        var headerTitleString = headerTitleValue.GetType().GetProperty("Title");
+
+                        if (headerTitleString == null || string.Compare(
+                                headerTitleString.GetValue(headerTitleValue, null).ToString().Trim(),
+                                docWindow.Caption.Trim(), StringComparison.Ordinal) != 0) continue;
+
+                        var borders = WpfHelper
+                            .GetObjectsByTypeName(documentTabItem, "System.Windows.Controls.Border").ToArray();
+
+                        if (borders.Length <= 4) continue;
+
+                        yield return borders[2] as Border;
+
+                        yield break;
                     }
                 }
-                if (tabBorders.Count > 0)
-                    break;
             }
+        }
 
+        private static void SetColor(Color color, bool clear, IReadOnlyCollection<Border> tabBorders)
+        {
             if (tabBorders.Count <= 0) return;
 
             foreach (var tabBorder in tabBorders)
@@ -321,6 +306,39 @@ namespace SsmsRollbackMode
                     tabBorder.ClearValue(Control.BackgroundProperty);
                     tabBorder.ClearValue(Control.BorderBrushProperty);
                 }
+            }
+        }
+
+        private static IEnumerable<Border> GetFloatingWindowTabBorders(Window docWindow)
+        {
+            if (docWindow == null || !docWindow.IsFloating) yield break;
+
+            DependencyObject parent = null;
+            foreach (var window in Application.Current.Windows)
+            {
+                if (window.GetType().FullName?.Contains("Floating") != true) continue;
+                try
+                {
+                    var title = ReflectionHelper.GetPropertyValue(
+                        ReflectionHelper.GetPropertyValue(
+                            ReflectionHelper.GetPropertyValue(
+                                WpfHelper.FindVisualChildren<ContentPresenter>(
+                                        WpfHelper.FindChild<Border>(window as DependencyObject, "ContentBorder")).Skip(1)
+                                    .FirstOrDefault()?.Content, "DataContext"), "Title"), "Title");
+                    if (title == null) continue;
+                    if (!title.ToString().Contains(docWindow.Caption)) continue;
+                    parent = window as DependencyObject;
+                    break;
+                }
+                catch (Exception ex)
+                {
+                }
+            }
+
+            if (parent != null)
+            {
+                var child = WpfHelper.FindChild<Border>(parent, "Bd");
+                yield return child;
             }
         }
     }
