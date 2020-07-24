@@ -239,9 +239,8 @@ namespace SsmsRollbackMode
 
         internal static void UpdateTabColorDataInternal(Window docWindow, Color color, bool clear = false)
         {
-            var tabBorders = GetFloatingWindowTabBorders(docWindow);
-            tabBorders = tabBorders.Concat(GetWindowTabBorders(docWindow));
-            SetColor(color, clear, tabBorders.ToArray());
+            var tabBorders = GetWindowTabBorders(docWindow).ToArray();
+            SetColor(color, clear, tabBorders);
         }
 
         private static IEnumerable<Border> GetWindowTabBorders(Window docWindow)
@@ -255,8 +254,8 @@ namespace SsmsRollbackMode
                 {
                     if (documentGroupControl == null) continue;
 
-                    const string name = "Microsoft.VisualStudio.PlatformUI.Shell.Controls.DocumentTabItem";
-                    var documentTabItems = WpfHelper.GetObjectsByTypeName(documentGroupControl, name);
+                    var documentTabItems = WpfHelper.GetObjectsByTypeName(documentGroupControl,
+                        "Microsoft.VisualStudio.PlatformUI.Shell.Controls.DocumentTabItem");
 
                     foreach (var documentTabItem in documentTabItems)
                     {
@@ -273,12 +272,14 @@ namespace SsmsRollbackMode
                         var headerTitleValue = headerTitle.GetValue(header, null);
                         var headerTitleString = headerTitleValue.GetType().GetProperty("Title");
 
-                        if (headerTitleString == null || string.Compare(
-                                headerTitleString.GetValue(headerTitleValue, null).ToString().Trim(),
-                                docWindow.Caption.Trim(), StringComparison.Ordinal) != 0) continue;
+                        if (headerTitleString == null
+                            || !string.Equals(headerTitleString.GetValue(headerTitleValue, null).ToString().Trim(),
+                                docWindow.Caption.Trim(), StringComparison.Ordinal))
+                        {
+                            continue;
+                        }
 
-                        var borders = WpfHelper
-                            .GetObjectsByTypeName(documentTabItem, "System.Windows.Controls.Border").ToArray();
+                        var borders = WpfHelper.GetObjectsByTypeName(documentTabItem, "System.Windows.Controls.Border").ToArray();
 
                         if (borders.Length <= 4) continue;
 
@@ -306,39 +307,6 @@ namespace SsmsRollbackMode
                     tabBorder.ClearValue(Control.BackgroundProperty);
                     tabBorder.ClearValue(Control.BorderBrushProperty);
                 }
-            }
-        }
-
-        private static IEnumerable<Border> GetFloatingWindowTabBorders(Window docWindow)
-        {
-            if (docWindow == null || !docWindow.IsFloating) yield break;
-
-            DependencyObject parent = null;
-            foreach (var window in Application.Current.Windows)
-            {
-                if (window.GetType().FullName?.Contains("Floating") != true) continue;
-                try
-                {
-                    var title = ReflectionHelper.GetPropertyValue(
-                        ReflectionHelper.GetPropertyValue(
-                            ReflectionHelper.GetPropertyValue(
-                                WpfHelper.FindVisualChildren<ContentPresenter>(
-                                        WpfHelper.FindChild<Border>(window as DependencyObject, "ContentBorder")).Skip(1)
-                                    .FirstOrDefault()?.Content, "DataContext"), "Title"), "Title");
-                    if (title == null) continue;
-                    if (!title.ToString().Contains(docWindow.Caption)) continue;
-                    parent = window as DependencyObject;
-                    break;
-                }
-                catch (Exception ex)
-                {
-                }
-            }
-
-            if (parent != null)
-            {
-                var child = WpfHelper.FindChild<Border>(parent, "Bd");
-                yield return child;
             }
         }
     }
