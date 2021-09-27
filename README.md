@@ -1,5 +1,6 @@
 # SsmsRollbackMode
 
+An SQL Server Management Studio 2019 (v18) extension. Wraps the query with a transaction. So all the query execution side effects, excepting an identity seed, will be rolled back.
 
 How to install (2 ways):
  - Build the  solution with Visual Studio in Administrator mode
