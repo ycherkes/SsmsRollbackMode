@@ -1,3 +1,5 @@
+# [![Made in Ukraine](https://img.shields.io/badge/made_in-ukraine-ffd700.svg?labelColor=0057b7&style=for-the-badge)](https://stand-with-ukraine.pp.ua) [Stand with the people of Ukraine: How to Help](https://stand-with-ukraine.pp.ua)
+
 # SsmsRollbackMode
 
 An SQL Server Management Studio 2019 (v18) extension. Wraps the query with a transaction. So all the query execution side effects, excepting an identity seed, will be rolled back.
@@ -9,3 +11,7 @@ How to install (2 ways):
  - Unzip [release archive](https://github.com/ycherkes/SsmsRollbackMode/releases) to C:\Program Files (x86)\Microsoft SQL Server Management Studio 18\Common7\IDE\Extensions\
 
 Usage: Main menu -> Tools -> Rollback Mode
+
+[![PayPal](https://img.shields.io/badge/Donate-PayPal-ffd700.svg?labelColor=0057b7&style=for-the-badge)](https://www.paypal.com/donate/?business=KXGF7CMW8Y8WJ&no_recurring=0&item_name=Help+SSMS+Rollback+Mode+extension+become+better%21)
+
+Any donations during this time will be directed to local charities at my own discretion.
