@@ -12,6 +12,8 @@ How to install (2 ways):
 
 Usage: Main menu -> Tools -> Rollback Mode
 
+![SsmsRollbackModeDemo](https://user-images.githubusercontent.com/13467759/208288303-78cf4aca-4a16-4ca2-a1c6-bcce17fe47b3.gif)
+
 [![PayPal](https://img.shields.io/badge/Donate-PayPal-ffd700.svg?labelColor=0057b7&style=for-the-badge)](https://www.paypal.com/donate/?business=KXGF7CMW8Y8WJ&no_recurring=0&item_name=Help+SSMS+Rollback+Mode+extension+become+better%21)
 
 Any donations during this time will be directed to local charities at my own discretion.
