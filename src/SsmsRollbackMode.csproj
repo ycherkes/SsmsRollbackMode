@@ -30,7 +30,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SsmsRollbackMode</RootNamespace>
     <AssemblyName>SsmsRollbackMode</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <GeneratePkgDefFile>true</GeneratePkgDefFile>
     <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
     <IncludeDebugSymbolsInVSIXContainer>true</IncludeDebugSymbolsInVSIXContainer>
@@ -50,7 +50,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CopyVsixExtensionFiles>True</CopyVsixExtensionFiles>
-    <CopyVsixExtensionLocation>C:\Program Files %28x86%29\Microsoft SQL Server Management Studio 18\Common7\IDE\Extensions\RollbackMode</CopyVsixExtensionLocation>
+    <CopyVsixExtensionLocation>C:\Program Files %28x86%29\Microsoft SQL Server Management Studio 20\Common7\IDE\Extensions\RollbackMode</CopyVsixExtensionLocation>
     <DeployExtension>False</DeployExtension>
     <CreateVsixContainer>True</CreateVsixContainer>
   </PropertyGroup>
@@ -61,6 +61,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CopyVsixExtensionFiles>True</CopyVsixExtensionFiles>
+    <CopyVsixExtensionLocation>C:\Program Files %28x86%29\Microsoft SQL Server Management Studio 20\Common7\IDE\Extensions\RollbackMode</CopyVsixExtensionLocation>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="General.Designer.cs">

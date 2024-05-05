@@ -127,6 +127,7 @@ namespace SsmsRollbackMode
 
             General.Default.IsRollbackModeOn = !General.Default.IsRollbackModeOn;
             General.Default.Save();
+
             var command = (MenuCommand) sender;
             command.Checked = General.Default.IsRollbackModeOn;
 
@@ -136,20 +137,18 @@ namespace SsmsRollbackMode
 
         private static void OnBeforeQueryExecuted(string guid, int id, object customin, object customout, ref bool canceldefault)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             try
             {
                 if(!General.Default.IsRollbackModeOn) return;
 
-                var document = _dte.ActiveDocument;
-
                 if (_dte.UndoContext.IsOpen)
                 {
-                    const string title = "RollbackModeCommand";
-
                     VsShellUtilities.ShowMessageBox(
                         _package,
                         "Another query is in progress",
-                        title,
+                        "RollbackModeCommand",
                         OLEMSGICON.OLEMSGICON_INFO,
                         OLEMSGBUTTON.OLEMSGBUTTON_OK,
                         OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
@@ -158,6 +157,8 @@ namespace SsmsRollbackMode
                 }
 
                 _dte.UndoContext.Open("Wrap with transaction");
+
+                var document = _dte.ActiveDocument;
 
                 var textDocument = (TextDocument)document.Object("TextDocument");
 
@@ -174,11 +175,18 @@ namespace SsmsRollbackMode
                 if (selection)
                 {
                     var swapSelection = textDocument.Selection.IsActiveEndGreater;
+
                     if (swapSelection)
+                    {
                         textDocument.Selection.SwapAnchor();
+                    }
+
                     textDocument.Selection.CharLeft(true, BeginTranStatement.Length-1);
+
                     if(swapSelection)
+                    {
                         textDocument.Selection.SwapAnchor();
+                    }
                 }
 
                 var endPoint = selection
