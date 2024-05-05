@@ -8,7 +8,7 @@ As I found out later, this is the equivalent of the "**Test mode**" of **ApexSQL
 
 How to install (2 ways):
  - Build the  solution with Visual Studio in Administrator mode
- - Unzip [release archive](https://github.com/ycherkes/SsmsRollbackMode/releases) to C:\Program Files (x86)\Microsoft SQL Server Management Studio 18\Common7\IDE\Extensions\
+ - Unzip [release archive](https://github.com/ycherkes/SsmsRollbackMode/releases) to C:\Program Files (x86)\Microsoft SQL Server Management Studio 20\Common7\IDE\Extensions\
 
 Usage: Main menu -> Tools -> Rollback Mode
 
